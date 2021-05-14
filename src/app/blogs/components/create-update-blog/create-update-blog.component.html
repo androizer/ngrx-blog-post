@@ -1,0 +1,131 @@
+<div
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  fxLayoutGap="16px"
+  class="post--container"
+>
+  <div fxLayout="column" fxLayoutGap="16px" class="blog-card">
+    <div class="card-header">
+      <span
+        *ngIf="isImageSaved"
+        class="reset-image"
+        matTooltip="Reset Cover Image"
+        matTooltipPosition="above"
+      >
+        <button mat-icon-button (click)="resetCoverImage()">
+          <mat-icon color="warn">delete</mat-icon>
+        </button>
+      </span>
+      <div #bgImage class="bg-container">
+        <input
+          type="file"
+          hidden
+          #fileInput
+          [accept]="allowedTypes.join(',')"
+          (change)="fileSelectionChange($event)"
+        />
+        <span class="upload-text" fxLayout="column" fxLayoutGap="4px">
+          <span class="upload-title">
+            Click
+            <a (click)="fileInput.click()">here</a>
+            to
+            {{ isImageSaved ? "update" : "upload" }}
+            cover image
+          </span>
+          <span class="upload-subtitle">(optional)</span>
+        </span>
+      </div>
+    </div>
+    <div class="card-content">
+      <form
+        novalidate
+        fxLayout="column"
+        fxLayoutGap="16px"
+        [formGroup]="formGroup"
+        (ngSubmit)="onFormSubmit()"
+      >
+        <div class="blog-title">
+          <mat-form-field fxFlex appearance="outline">
+            <mat-label>Title</mat-label>
+            <input
+              matInput
+              type="text"
+              placeholder="Title"
+              formControlName="title"
+            />
+            <mat-error *ngIf="formGroup.get('title')!.invalid">
+              <span *ngIf="formGroup.get('title')!.errors?.required">
+                Title is required
+              </span>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="blog-content">
+          <mat-form-field fxFlex appearance="outline">
+            <mat-label>Content</mat-label>
+            <textarea
+              matInput
+              placeholder="Content"
+              [rows]="6"
+              formControlName="content"
+            ></textarea>
+            <mat-error *ngIf="formGroup.get('content')!.invalid">
+              <span *ngIf="formGroup.get('content')!.errors?.required">
+                Content is required
+              </span>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="blog-tags">
+          <mat-form-field fxFlex appearance="outline">
+            <mat-label>Tags</mat-label>
+            <mat-chip-list #chipList>
+              <mat-chip
+                *ngFor="let tag of formGroup.get('tags')!.value"
+                [selectable]="true"
+                [removable]="true"
+                (removed)="removeTag(tag)"
+              >
+                {{ tag }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Enter tags..."
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="true"
+                (matChipInputTokenEnd)="addTag($event)"
+              />
+            </mat-chip-list>
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+    <div
+      fxLayout="row"
+      fxLayoutAlign="end center"
+      fxLayoutGap="16px"
+      class="card-actions"
+    >
+      <button
+        mat-stroked-button
+        type="button"
+        color="default"
+        (click)="resetForm()"
+      >
+        Reset
+      </button>
+      <button mat-flat-button type="button" color="accent" routerLink="/blogs">
+        Cancel
+      </button>
+      <button
+        mat-flat-button
+        type="button"
+        color="primary"
+        (click)="onFormSubmit()"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+</div>

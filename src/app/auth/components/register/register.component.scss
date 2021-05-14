@@ -1,0 +1,47 @@
+@import "../../../core/scss/mixins.scss";
+
+:host {
+  flex: 1;
+  padding: 16px;
+}
+
+$avatarContainer: 75px;
+$cardWidth: 300px;
+
+.register-card {
+  position: relative;
+  margin: auto;
+  margin-top: 32px;
+  width: $cardWidth;
+  .avatar-container {
+    position: absolute;
+    top: -$avatarContainer/2;
+    right: ($cardWidth/2 - $avatarContainer/2 + 16px);
+    height: $avatarContainer;
+    width: $avatarContainer;
+    border-radius: 50%;
+    background-image: url("../../../../assets/images/generic-user.jpg");
+    background-position: center;
+    background-size: cover;
+    border: 1px solid #d8d8d8;
+    mat-icon {
+      @include icon-size(16px);
+      position: absolute;
+      color: #3f51b5;
+      right: 2px;
+      top: 4px;
+    }
+  }
+  h2 {
+    margin-top: 32px;
+  }
+  form {
+    &,
+    .mat-form-field {
+      width: 100%;
+      input {
+        line-height: 16px;
+      }
+    }
+  }
+}

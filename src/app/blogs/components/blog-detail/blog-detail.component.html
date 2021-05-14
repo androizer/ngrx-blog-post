@@ -1,0 +1,133 @@
+<div
+  class="blog-detail-container"
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  fxLayoutGap="16px"
+>
+  <div class="view-container" fxLayout="column" fxLayoutGap="16px">
+    <ng-container [ngTemplateOutlet]="postCard"></ng-container>
+    <!-- Comments Container -->
+    <div class="comments-container">
+      <h2>Comments ({{ post.comments?.length || 0 }})</h2>
+      <div class="comment-list" fxLayout="column" fxLayoutGap="16px">
+        <ng-container
+          *ngFor="let item of post.comments || []; first as isFirst"
+          [ngTemplateOutlet]="commentCard"
+          [ngTemplateOutletContext]="{
+            comment: item,
+            author: post.author,
+            isFirst: isFirst
+          }"
+        ></ng-container>
+      </div>
+      <div
+        class="comment-form"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="16px"
+      >
+        <mat-form-field fxFlex appearance="outline">
+          <input
+            matInput
+            placeholder="Type a message..."
+            [formControl]="commentControl"
+            (keydown.enter)="addComment()"
+          />
+        </mat-form-field>
+        <button mat-icon-button (click)="addComment()">
+          <mat-icon color="accent">send</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Blog Post Card -->
+<ng-template #postCard>
+  <div class="post-header">
+    <div #bgCover class="bg-container"></div>
+    <div
+      class="avatar"
+      [style.background-image]="post.author?.avatar?.base64Url"
+    ></div>
+  </div>
+  <div
+    fxLayout="column"
+    fxLayoutAlign="start center"
+    fxLayoutGap="16px"
+    class="post-content"
+  >
+    <div class="blog-title">{{ post.title }}</div>
+    <div class="blog-content">{{ post.content }}</div>
+    <div
+      *ngIf="post.tags?.length"
+      fxLayout="row"
+      fxLayoutAlign="start center"
+      fxLayoutGap="16px"
+      class="blog-tags"
+    >
+      <mat-icon>sell</mat-icon>
+      <span fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="8px">
+        <span class="tag-item" *ngFor="let item of post.tags">
+          {{ item }}
+        </span>
+      </span>
+    </div>
+    <div fxFlexAlign="start" class="blog-upvote">
+      <button mat-icon-button matTooltip="Thumbs Up">
+        <mat-icon class="thumbs_up">thumb_up</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="post-actions" fxLayoutAlign="center center" fxLayoutGap="8px">
+    <span *ngIf="post.author" class="creator">
+      by {{ post.author.fullName }}
+    </span>
+    <span fxLayout fxLayoutAlign="start center" fxLayoutGap="8px">
+      <span class="dot-separator"></span>
+      <span class="created-on">{{ post.createdOn | date }}</span>
+    </span>
+  </div>
+</ng-template>
+
+<!-- Comment Card -->
+<ng-template
+  #commentCard
+  let-comment="comment"
+  let-author="author"
+  let-isFirst="isFirst"
+>
+  <div
+    class="comment-card-container"
+    [ngClass]="{ 'comment-divider': !isFirst }"
+    fxLayout="column"
+    fxLayoutGap="16px"
+  >
+    <div class="comment-header" fxLayoutAlign="start center" fxLayoutGap="12px">
+      <span
+        class="creator-header"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="8px"
+      >
+        <div
+          *ngIf="comment.author.avatar?.base64Url"
+          class="creator-avatar"
+          [style.background-image]="comment.author.avatar?.base64Url"
+        ></div>
+        <mat-icon
+          *ngIf="!comment.author.avatar?.base64Url"
+          class="creator-icon"
+        >
+          account_circle
+        </mat-icon>
+        <span class="creator-title">{{ comment.author?.fullName }}</span>
+      </span>
+      <span class="pipe-separator">|</span>
+      <span class="comment-created_on">{{ comment.createdOn | date }}</span>
+    </div>
+    <div class="comment-content">
+      {{ comment.content }}
+    </div>
+  </div>
+</ng-template>
