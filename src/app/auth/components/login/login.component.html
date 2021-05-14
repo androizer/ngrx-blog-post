@@ -1,0 +1,66 @@
+<div fxLayout="column" fxLayoutAlign="center center">
+  <mat-card class="login-card">
+    <mat-card-content fxLayout="column" fxLayoutAlign="center center">
+      <h2>Login</h2>
+      <form
+        novalidate
+        fxLayout="column"
+        fxLayoutGap="16px"
+        [formGroup]="formGroup"
+        (ngSubmit)="onFormSubmit()"
+      >
+        <!-- Email -->
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            placeholder="Email"
+            type="email"
+            formControlName="email"
+          />
+          <mat-icon matSuffix>email</mat-icon>
+          <mat-error *ngIf="formGroup.get('email')!.invalid">
+            <span *ngIf="formGroup.get('email')!.errors?.required">
+              Email is required
+            </span>
+            <span *ngIf="formGroup.get('email')!.errors?.email">
+              Enter a valid email
+            </span>
+          </mat-error>
+        </mat-form-field>
+        <!-- Password -->
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="hide ? 'password' : 'text'"
+            placeholder="Password"
+            formControlName="password"
+          />
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            (click)="hide = !hide"
+          >
+            <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+          </button>
+          <mat-error *ngIf="formGroup.get('password')!.invalid">
+            <span *ngIf="formGroup.get('password')!.errors?.required">
+              Password is required
+            </span>
+            <span
+              *ngIf="
+                formGroup.get('password')!.errors?.minlength ||
+                formGroup.get('password')!.errors?.maxlength
+              "
+            >
+              Password should be in the range of 8 to 16 chars
+            </span>
+          </mat-error>
+        </mat-form-field>
+        <button mat-flat-button color="accent" type="submit">Submit</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,19 @@
+:host {
+  flex: 1;
+  padding: 16px;
+}
+
+.login-card {
+  margin: auto;
+  margin-top: 32px;
+  width: 300px;
+  form {
+    &,
+    .mat-form-field {
+      width: 100%;
+      input {
+        line-height: 16px;
+      }
+    }
+  }
+}

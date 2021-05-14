@@ -1,0 +1,53 @@
+@import "../../../core/scss/mixins.scss";
+
+:host {
+  flex: 1;
+  padding: 16px;
+}
+
+.blog-card {
+  border-radius: 4px;
+  box-shadow: 0 0 4px rgba($color: #000000, $alpha: 0.2);
+  margin-top: 16px;
+  width: 70%;
+  .card-header {
+    position: relative;
+    .bg-container {
+      background-blend-mode: overlay;
+      background-color: #00000070;
+      background-position: center;
+      background-size: cover;
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px;
+      height: 300px;
+      @include fxLayout(column);
+      @include fxLayoutAlign(center, center);
+      .upload-text {
+        backdrop-filter: blur(1px);
+        .upload-title {
+          font-size: 20px;
+          a {
+            color: yellow;
+            cursor: pointer;
+          }
+        }
+        .upload-title,
+        .upload-subtitle {
+          color: #fff;
+          text-align: center;
+        }
+      }
+    }
+    .reset-image {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+  }
+  .card-content {
+    padding: 16px;
+  }
+  .card-actions {
+    padding: 0 16px 16px;
+  }
+}

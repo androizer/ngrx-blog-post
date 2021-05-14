@@ -1,0 +1,46 @@
+@mixin fxFill {
+  height: 100%;
+  min-height: 100%;
+  min-width: 100%;
+  width: 100%;
+}
+
+@mixin fxFlex {
+  display: flex;
+  flex: 1;
+}
+
+@mixin fxLayout($direction: row) {
+  display: flex;
+  flex-direction: $direction;
+}
+
+@mixin fxLayoutAlign($y-axis: start, $x-axis: start) {
+  justify-content: $y-axis;
+  align-content: $x-axis;
+}
+
+@mixin fxLayoutGap($gap: 16px) {
+  & > *:not(:last-child) {
+    margin-bottom: $gap;
+  }
+}
+
+@mixin text-ellipsis($line: 1) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: $line;
+}
+
+@mixin icon-size($size: 16px) {
+  font-size: $size;
+  height: $size;
+  width: $size;
+}
+
+@mixin center-cover--bg {
+  background-position: center;
+  background-size: cover;
+}

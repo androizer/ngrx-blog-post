@@ -1,0 +1,133 @@
+<div fxLayout="column" fxLayoutAlign="center center">
+  <mat-card class="register-card">
+    <mat-card-content fxLayout="column" fxLayoutAlign="center center">
+      <div #avatar class="avatar-container">
+        <input
+          type="file"
+          hidden
+          (change)="onAvatarChange($event)"
+          #fileInput
+        />
+        <mat-icon (click)="fileInput.click()">add_a_photo</mat-icon>
+      </div>
+      <h2>Register</h2>
+      <form
+        novalidate
+        fxLayout="column"
+        fxLayoutGap="16px"
+        [formGroup]="formGroup"
+        (ngSubmit)="onFormSubmit()"
+      >
+        <!-- First Name -->
+        <mat-form-field appearance="outline">
+          <mat-label>First Name</mat-label>
+          <input
+            matInput
+            placeholder="First Name"
+            type="text"
+            formControlName="firstName"
+          />
+          <mat-error *ngIf="formGroup.get('firstName')!.invalid">
+            <span *ngIf="formGroup.get('firstName')!.errors?.required">
+              FirstName is required
+            </span>
+          </mat-error>
+        </mat-form-field>
+        <!-- Last Name -->
+        <mat-form-field appearance="outline">
+          <mat-label>Last Name</mat-label>
+          <input
+            matInput
+            placeholder="Last Name"
+            type="text"
+            formControlName="lastName"
+          />
+          <mat-error *ngIf="formGroup.get('lastName')!.invalid">
+            <span *ngIf="formGroup.get('lastName')!.errors?.required">
+              Last Name is required
+            </span>
+          </mat-error>
+        </mat-form-field>
+        <!-- Email -->
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            placeholder="Email"
+            type="email"
+            formControlName="email"
+          />
+          <mat-icon matSuffix>email</mat-icon>
+          <mat-error *ngIf="formGroup.get('email')!.invalid">
+            <span *ngIf="formGroup.get('email')!.errors?.required">
+              Email is required
+            </span>
+            <span *ngIf="formGroup.get('email')!.errors?.email">
+              Enter a valid email
+            </span>
+          </mat-error>
+        </mat-form-field>
+        <!-- Password -->
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            placeholder="Password"
+            formControlName="password"
+          />
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            (click)="hidePassword = !hidePassword"
+          >
+            <mat-icon>{{
+              hidePassword ? "visibility_off" : "visibility"
+            }}</mat-icon>
+          </button>
+          <mat-error *ngIf="formGroup.get('password')!.invalid">
+            <span *ngIf="formGroup.get('password')!.hasError('required')">
+              Password is required
+            </span>
+            <span
+              *ngIf="
+                formGroup.get('password')!.hasError('minlength') ||
+                formGroup.get('password')!.hasError('maxlength')
+              "
+            >
+              Password should be in the range of 8 to 16 chars
+            </span>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Confirm Password</mat-label>
+          <input
+            matInput
+            [type]="hideConfirmPassword ? 'password' : 'text'"
+            placeholder="Confirm Password"
+            formControlName="confirmPassword"
+          />
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            (click)="hideConfirmPassword = !hideConfirmPassword"
+          >
+            <mat-icon>{{
+              hideConfirmPassword ? "visibility_off" : "visibility"
+            }}</mat-icon>
+          </button>
+          <mat-error *ngIf="formGroup.get('confirmPassword')!.invalid">
+            <span
+              *ngIf="formGroup.get('confirmPassword')!.hasError('mismatch')"
+            >
+              Password and Confirm Password didn't match
+            </span>
+          </mat-error>
+        </mat-form-field>
+        <button mat-flat-button color="accent" type="submit">Submit</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

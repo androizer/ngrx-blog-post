@@ -1,0 +1,41 @@
+<div fxFill fxLayout="column">
+  <mat-toolbar color="primary" fxLayoutGap="1rem">
+    <button mat-icon-button (click)="toggleSidenav()">
+      <mat-icon [color]="drawer.opened ? 'accent' : 'default'">menu</mat-icon>
+    </button>
+    <span>Blog App</span>
+  </mat-toolbar>
+
+  <mat-drawer-container fxFlex autosize [hasBackdrop]="true">
+    <mat-drawer #drawer mode="over">
+      <ng-container [ngTemplateOutlet]="navbar"></ng-container>
+    </mat-drawer>
+    <mat-drawer-content fxFill fxLayout="column">
+      <router-outlet></router-outlet>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>
+
+<!-- Navbar Items -->
+<ng-template #navbar>
+  <div style="width: 250px">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/auth/login">
+        <mat-icon matListIcon color="primary">login</mat-icon>
+        <span mat-line>Login</span>
+      </a>
+      <a mat-list-item routerLink="/auth/register">
+        <mat-icon matListIcon color="primary">app_registration</mat-icon>
+        <span mat-line>Register</span>
+      </a>
+      <a mat-list-item routerLink="/auth/login" (click)="logout()">
+        <mat-icon matListIcon color="primary">logout</mat-icon>
+        <span mat-line>Logout</span>
+      </a>
+      <a mat-list-item routerLink="/blogs">
+        <mat-icon matListIcon color="primary">article</mat-icon>
+        <span mat-line>Blogs</span>
+      </a>
+    </mat-nav-list>
+  </div>
+</ng-template>

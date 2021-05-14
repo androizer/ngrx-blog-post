@@ -1,0 +1,102 @@
+<div
+  fxFill
+  class="blog-list-container"
+  fxLayout="row wrap"
+  fxLayoutAlign="center center"
+  fxLayoutGap="32px"
+>
+  <ng-container
+    *ngFor="let item of allPost$ | async"
+    [ngTemplateOutlet]="blogCard"
+    [ngTemplateOutletContext]="{ post: item }"
+  >
+  </ng-container>
+</div>
+<!-- Fab Button -->
+<button mat-fab color="accent" class="fab-add" routerLink="new">
+  <mat-icon>add</mat-icon>
+</button>
+
+<ng-template #blogCard let-post="post">
+  <mat-card class="blog-card">
+    <div class="mat-card-header">
+      <div
+        class="bg-container"
+        [style.background-image]="post.image?.base64Url"
+      ></div>
+      <span
+        class="avatar"
+        [style.background-image]="post.author.avatar?.base64Url"
+      ></span>
+    </div>
+    <mat-card-content
+      fxLayout="column"
+      fxLayoutAlign="start start"
+      fxLayoutGap="16px"
+    >
+      <div fxLayout fxLayoutAlign="end center" class="blog-actions">
+        <button
+          *ngIf="currentUser.id === post.author.id"
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          [matMenuTriggerData]="{ post: post }"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+      </div>
+      <div class="blog-title">{{ post.title }}</div>
+      <div class="blog-content">{{ post.content }}</div>
+      <div
+        *ngIf="post.tags?.length"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="16px"
+        class="blog-tags"
+      >
+        <mat-icon>sell</mat-icon>
+        <span
+          fxLayout="row wrap"
+          fxLayoutAlign="start center"
+          fxLayoutGap="8px"
+        >
+          <span class="tag-item" *ngFor="let item of post.tags">
+            {{ item }}
+          </span>
+        </span>
+      </div>
+      <div class="read-more" [routerLink]="post.id">READ MORE</div>
+    </mat-card-content>
+    <mat-card-actions
+      fxLayout="row wrap"
+      fxLayoutAlign="center center"
+      fxLayoutGap="8px"
+    >
+      <span *ngIf="post.author" class="creator">
+        by {{ post.author.fullName }}
+      </span>
+      <span fxLayout fxLayoutAlign="start center" fxLayoutGap="8px">
+        <span class="dot-separator"></span>
+        <span class="created-on">{{ post.createdOn | date }}</span>
+      </span>
+      <span fxLayout fxLayoutAlign="start center" fxLayoutGap="8px">
+        <span class="dot-separator"></span>
+        <span class="comment-count"
+          >{{ post.comments?.length || 0 }} Comments</span
+        >
+      </span>
+    </mat-card-actions>
+  </mat-card>
+</ng-template>
+
+<mat-menu #menu>
+  <ng-template matMenuContent let-post="post">
+    <button mat-menu-item routerLink="{{ post.id }}/edit">
+      <mat-icon color="accent">edit</mat-icon>
+      <span>Edit</span>
+    </button>
+    <button mat-menu-item>
+      <mat-icon color="warn">delete</mat-icon>
+      <span>Delete</span>
+    </button>
+  </ng-template>
+</mat-menu>
