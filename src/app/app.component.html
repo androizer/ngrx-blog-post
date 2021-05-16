@@ -1,9 +1,18 @@
 <div fxFill fxLayout="column">
-  <mat-toolbar color="primary" fxLayoutGap="1rem">
-    <button mat-icon-button (click)="toggleSidenav()">
-      <mat-icon [color]="drawer.opened ? 'accent' : 'default'">menu</mat-icon>
-    </button>
-    <span>Blog App</span>
+  <mat-toolbar color="primary" fxLayoutAlign="space-between center">
+    <span fxLayoutAlign="start center" fxLayoutGap="1rem">
+      <button mat-icon-button (click)="toggleSidenav()">
+        <mat-icon [color]="drawer.opened ? 'accent' : 'default'">menu</mat-icon>
+      </button>
+      <span>Blog App</span>
+    </span>
+    <span fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1rem">
+      <label class="username">{{authService.getCurrentUser()?.fullName}}</label>
+      <div
+        class="user-avatar"
+        [style.background-image]="authService.getCurrentUser()?.avatar?.base64Url"
+      ></div>
+    </span>
   </mat-toolbar>
 
   <mat-drawer-container fxFlex autosize [hasBackdrop]="true">

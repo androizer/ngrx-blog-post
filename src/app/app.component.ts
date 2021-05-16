@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
+
 import { AuthService } from './core/services';
 
 @Component({
@@ -12,10 +13,10 @@ import { AuthService } from './core/services';
 export class AppComponent implements OnInit {
   constructor(
     private readonly router: Router,
-    private readonly authService: AuthService
+    public readonly authService: AuthService
   ) {}
 
-  @ViewChild(MatDrawer) drawer!: MatDrawer;
+  @ViewChild(MatDrawer) drawer: MatDrawer;
 
   ngOnInit() {
     this.router.events
