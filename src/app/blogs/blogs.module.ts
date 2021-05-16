@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { BlogsRoutingModule } from './blogs-routing.module';
 import {
@@ -18,12 +19,14 @@ import {
   CreateUpdateBlogComponent,
 } from './components';
 import { BlogService, CommentService } from './services';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
     BlogListComponent,
     BlogDetailComponent,
     CreateUpdateBlogComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -37,6 +40,7 @@ import { BlogService, CommentService } from './services';
     MatMenuModule,
     MatChipsModule,
     MatTooltipModule,
+    MatDialogModule,
     ReactiveFormsModule,
   ],
   providers: [BlogService, CommentService],

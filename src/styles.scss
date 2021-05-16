@@ -34,3 +34,9 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #b7b7b7;
 }
+
+.confirmation-dialog--panel {
+  .mat-dialog-container {
+    padding: 0;
+  }
+}

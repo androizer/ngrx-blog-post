@@ -1,0 +1,12 @@
+<div fxLayout="column" class="confirmation-dialog-container">
+  <div class="dialog-header">
+    <span class="header-title">{{ dialogData.title }}</span>
+  </div>
+  <div class="dialog-content">
+    <span class="content">{{ dialogData.description }}</span>
+  </div>
+  <div fxLayoutAlign="end center" fxLayoutGap="1rem" class="dialog-actions">
+    <button mat-flat-button (click)="onCancel()">Cancel</button>
+    <button mat-flat-button (click)="onConfirm()">OK</button>
+  </div>
+</div>
