@@ -9,10 +9,9 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
-import { concatMap } from 'rxjs/operators';
+
 import { uuid } from '../../../core/types';
 import { Post } from '../../models';
-
 import { BlogService } from '../../services';
 
 @Component({
@@ -49,7 +48,6 @@ export class CreateUpdateBlogComponent implements OnInit {
     if (this.postId) {
       this.blogService
         .getPostById(this.postId, { join: { field: 'image' } })
-        .pipe(concatMap((payload) => this.blogService.appendBase64Url(payload)))
         .subscribe((payload) => {
           this.post = payload;
           this.formGroup.patchValue({

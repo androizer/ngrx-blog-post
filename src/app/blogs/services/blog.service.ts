@@ -2,12 +2,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CreateQueryParams, RequestQueryBuilder } from '@nestjsx/crud-request';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import { CrudListResponse, uuid } from '../../core/types';
-import { Image, Post } from '../models';
+import { Post } from '../models';
 
 @Injectable()
 export class BlogService {
@@ -59,21 +58,6 @@ export class BlogService {
 
   deletePost(id: uuid) {
     return this.http.delete(`${environment.apiUrl}/posts/${id}`);
-  }
-
-  appendBase64Url(post: Post): Observable<Post> {
-    return new Observable((subscriber) => {
-      const base64 = post.image?.base64;
-      if (base64) {
-        subscriber.next({
-          ...post,
-          image: new Image(post.image),
-        });
-      } else {
-        subscriber.next(post);
-      }
-      subscriber.complete();
-    });
   }
 
   // Private functions
