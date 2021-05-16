@@ -1,1 +1,17 @@
+@import "./core/scss/mixins.scss";
 
+$avatar: 40px;
+
+:host {
+  .username {
+    font-size: 16px;
+  }
+  .user-avatar {
+    height: $avatar;
+    width: $avatar;
+    border-radius: 50%;
+    @include center-cover--bg();
+    background-image: url("../assets/images/generic-user.jpg");
+    border: 1px solid #ebebeb;
+  }
+}
