@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { concatMap } from 'rxjs/operators';
 
 import { uuid } from '../../../core/types';
 import { Post } from '../../models';
@@ -59,7 +58,6 @@ export class BlogDetailComponent implements OnInit {
         ],
         sort: { field: 'comments.createdOn', order: 'DESC' },
       })
-      .pipe(concatMap((item) => this.blogService.appendBase64Url(item)))
       .subscribe((payload) => {
         this.post = payload;
         this.setCoverImage();
