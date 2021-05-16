@@ -1,0 +1,16 @@
+.confirmation-dialog-container {
+  .dialog-header,
+  .dialog-content,
+  .dialog-actions {
+    padding: 1rem;
+  }
+  .dialog-header {
+    .header-title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+  }
+  .dialog-content {
+    font-size: 16px;
+  }
+}
