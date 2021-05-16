@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { throwError } from 'rxjs';
-import { catchError, concatMap, tap } from 'rxjs/operators';
+import { CreateQueryParams, RequestQueryBuilder } from '@nestjsx/crud-request';
+import { iif, of, throwError } from 'rxjs';
+import { catchError, concatMap, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import { User } from '../../auth/models';
@@ -14,8 +15,9 @@ interface TokensPayload {
 
 @Injectable()
 export class AuthService {
-  private accessToken: string | null = null;
-  private currentUser!: User;
+  private accessToken: string;
+  private currentUser: User;
+  private tokenExpiresIn: number;
 
   constructor(
     private readonly http: HttpClient,
@@ -35,8 +37,12 @@ export class AuthService {
       .pipe(
         concatMap((payload) => {
           // TODO: check from store if current user details are present or not.
-          this._saveTokensAndRescheduleRefresh(payload);
-          return this.whoAmI();
+          this._saveTokenAndExpireDuration(payload);
+          return iif(
+            () => !!this.currentUser,
+            of(payload),
+            this.whoAmI().pipe(map(() => payload))
+          );
         })
       );
   }
@@ -45,6 +51,8 @@ export class AuthService {
     return this.http.get(`${environment.apiUrl}/auth/logout`).pipe(
       tap(() => {
         this.accessToken = null;
+        this.tokenExpiresIn = null;
+        this.currentUser = null;
       })
     );
   }
@@ -57,8 +65,12 @@ export class AuthService {
       .pipe(
         concatMap((payload) => {
           // TODO: check from store if current user details are present or not.
-          this._saveTokensAndRescheduleRefresh(payload);
-          return this.whoAmI();
+          this._saveTokenAndExpireDuration(payload);
+          return iif(
+            () => !!this.currentUser,
+            of(payload),
+            this.whoAmI().pipe(map(() => payload))
+          );
         }),
         catchError((err) => {
           this.router.navigate(['/auth/login']);
@@ -67,26 +79,30 @@ export class AuthService {
       );
   }
 
-  whoAmI() {
+  whoAmI(query: CreateQueryParams = { join: { field: 'avatar' } }) {
+    const qb = RequestQueryBuilder.create(query).query();
     return this.http
-      .get<User>(`${environment.apiUrl}/auth/me`)
-      .pipe(tap((payload) => (this.currentUser = payload)));
+      .get<User>(`${environment.apiUrl}/auth/me`, {
+        params: new HttpParams({ fromString: qb }),
+      })
+      .pipe(tap((payload) => (this.currentUser = new User(payload))));
   }
 
-  getAccessToken() {
+  getAccessToken(): string {
     return this.accessToken;
   }
 
-  getCurrentUser() {
+  getCurrentUser(): User {
     return this.currentUser;
   }
 
-  private _saveTokensAndRescheduleRefresh(payload: TokensPayload) {
+  isTokenExpired(): boolean {
+    return Date.now() > this.tokenExpiresIn;
+  }
+
+  private _saveTokenAndExpireDuration(payload: TokensPayload) {
     // Soon this will shift to ngrx/store.
     this.accessToken = payload.accessToken;
-    const durationDiff = payload.expiresIn - Date.now();
-    setTimeout(() => {
-      this.refreshToken();
-    }, durationDiff - 1000);
+    this.tokenExpiresIn = payload.expiresIn;
   }
 }
