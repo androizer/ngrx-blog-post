@@ -7,7 +7,7 @@ export class Post {
   id: uuid;
   title: string;
   content: string;
-  votes: number;
+  votes: uuid[];
   author: User;
   comments: Comment[];
   image: Image;
@@ -18,11 +18,14 @@ export class Post {
   modifiedOn?: Date;
   deletedOn?: Date;
 
+  // extra
+  isUpvoted?: boolean;
+
   constructor(data = {} as Partial<Post>) {
     this.id = data.id;
     this.title = data.title;
     this.content = data.content;
-    this.votes = data.votes;
+    this.votes = data.votes ?? [];
     this.author = data.author && new User(data.author);
     this.comments = data.comments
       ? data.comments.map((item) => new Comment(item))

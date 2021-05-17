@@ -60,6 +60,13 @@ export class BlogService {
     return this.http.delete(`${environment.apiUrl}/posts/${id}`);
   }
 
+  toggleVote(postId: uuid) {
+    return this.http.patch<boolean>(
+      `${environment.apiUrl}/posts/${postId}/react`,
+      {}
+    );
+  }
+
   // Private functions
   /**
    * Converts ArrayBuffer to Base64 SafeURL
