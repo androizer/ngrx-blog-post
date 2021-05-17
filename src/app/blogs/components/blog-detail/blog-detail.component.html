@@ -74,8 +74,18 @@
       </span>
     </div>
     <div fxFlexAlign="start" class="blog-upvote">
-      <button mat-icon-button matTooltip="Thumbs Up">
-        <mat-icon class="thumbs_up">thumb_up</mat-icon>
+      <button
+        mat-icon-button
+        matTooltip="Thumbs Up"
+        (click)="toggleUpvote(post.id)"
+      >
+        <mat-icon
+          [ngClass]="{
+            thumbs_up: !post.isUpvoted,
+            thumbs_up_active: post.isUpvoted
+          }"
+          >thumb_up</mat-icon
+        >
       </button>
     </div>
   </div>
