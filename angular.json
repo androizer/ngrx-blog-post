@@ -3,7 +3,7 @@
   "version": 1,
   "cli": {
     "packageManager": "yarn",
-    "defaultCollection": "@angular-eslint/schematics"
+    "defaultCollection": "@ngrx/schematics"
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -39,7 +39,9 @@
               "src/styles.scss"
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": ["nestjsx/crud-request"]
+            "allowedCommonJsDependencies": [
+              "nestjsx/crud-request"
+            ]
           },
           "configurations": {
             "production": {

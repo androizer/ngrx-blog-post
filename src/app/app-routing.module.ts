@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TokenGuard } from './core/guards';
+
+import { AuthGuard } from './core/guards';
 
 const routes: Routes = [
   {
@@ -16,7 +17,8 @@ const routes: Routes = [
     path: 'blogs',
     loadChildren: () =>
       import('./blogs/blogs.module').then((m) => m.BlogsModule),
-    canLoad: [TokenGuard],
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
   },
   {
     path: '**',

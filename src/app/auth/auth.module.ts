@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,9 +8,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
 
 import { AuthRoutingModule } from './auth-routing.module';
+import { AuthEffects } from './auth.effects';
 import { LoginComponent, RegisterComponent } from './components';
+import * as fromAuth from './reducers';
 
 @NgModule({
   declarations: [LoginComponent, RegisterComponent],
@@ -26,6 +29,10 @@ import { LoginComponent, RegisterComponent } from './components';
     MatButtonModule,
     MatIconModule,
     ReactiveFormsModule,
+    StoreModule.forFeature(fromAuth.authFeatureKey, fromAuth.reducers, {
+      metaReducers: fromAuth.metaReducers,
+    }),
+    EffectsModule.forFeature([AuthEffects]),
   ],
 })
 export class AuthModule {}

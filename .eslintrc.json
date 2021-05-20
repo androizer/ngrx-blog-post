@@ -47,5 +47,13 @@
       ],
       "rules": {}
     }
+  ],
+  "plugins": [
+    "ngrx",
+    "ngrx"
+  ],
+  "extends": [
+    "plugin:ngrx/recommended",
+    "plugin:ngrx/recommended"
   ]
 }

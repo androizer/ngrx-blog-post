@@ -20,15 +20,22 @@
 <ng-template #navbar>
   <div style="width: 250px">
     <mat-nav-list>
-      <a mat-list-item routerLink="/auth/login">
-        <mat-icon matListIcon color="primary">login</mat-icon>
-        <span mat-line>Login</span>
-      </a>
-      <a mat-list-item routerLink="/auth/register">
-        <mat-icon matListIcon color="primary">app_registration</mat-icon>
-        <span mat-line>Register</span>
-      </a>
-      <a mat-list-item routerLink="/auth/login" (click)="logout()">
+      <ng-container *ngIf="loggedOut$ | async">
+        <a mat-list-item routerLink="/auth/login">
+          <mat-icon matListIcon color="primary">login</mat-icon>
+          <span mat-line>Login</span>
+        </a>
+        <a mat-list-item routerLink="/auth/register">
+          <mat-icon matListIcon color="primary">app_registration</mat-icon>
+          <span mat-line>Register</span>
+        </a>
+      </ng-container>
+      <a
+        mat-list-item
+        routerLink="/auth/login"
+        (click)="logout()"
+        *ngIf="loggedIn$ | async"
+      >
         <mat-icon matListIcon color="primary">logout</mat-icon>
         <span mat-line>Logout</span>
       </a>
