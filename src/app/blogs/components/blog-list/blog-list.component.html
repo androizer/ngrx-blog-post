@@ -6,7 +6,7 @@
   fxLayoutGap="32px"
 >
   <ng-container
-    *ngFor="let item of allPost$ | async"
+    *ngFor="let item of allPost"
     [ngTemplateOutlet]="blogCard"
     [ngTemplateOutletContext]="{ post: item }"
   >
@@ -20,6 +20,18 @@
 <ng-template #blogCard let-post="post">
   <mat-card class="blog-card">
     <div class="mat-card-header">
+      <mat-icon
+        *ngIf="!post.isBookmarked"
+        (click)="toggleBookmark(post.id)"
+        class="bookmark bookmark--deactive"
+        >bookmark_border</mat-icon
+      >
+      <mat-icon
+        *ngIf="post.isBookmarked"
+        (click)="toggleBookmark(post.id)"
+        class="bookmark bookmark--active"
+        >bookmark</mat-icon
+      >
       <div
         class="bg-container"
         [style.background-image]="post.image?.base64Url"
@@ -36,7 +48,7 @@
     >
       <div fxLayout fxLayoutAlign="end center" class="blog-actions">
         <button
-          *ngIf="currentUser.id === post.author.id"
+          *ngIf="currentUser.id === post.authorId"
           mat-icon-button
           [matMenuTriggerFor]="menu"
           [matMenuTriggerData]="{ post: post }"
@@ -80,9 +92,9 @@
       </span>
       <span fxLayout fxLayoutAlign="start center" fxLayoutGap="8px">
         <span class="dot-separator"></span>
-        <span class="comment-count"
-          >{{ post.comments?.length || 0 }} Comments</span
-        >
+        <span class="comment-count">
+          {{ post.commentIds.length || 0 }} Comments
+        </span>
       </span>
     </mat-card-actions>
   </mat-card>
