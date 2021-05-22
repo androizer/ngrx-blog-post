@@ -42,9 +42,11 @@ export class BlogService {
 
   createPost(payload: FormData, query: CreateQueryParams = {}) {
     const qb = RequestQueryBuilder.create(query).query();
-    return this.http.post<Post>(`${environment.apiUrl}/posts`, payload, {
-      params: new HttpParams({ fromString: qb }),
-    });
+    return this.http
+      .post<Post>(`${environment.apiUrl}/posts`, payload, {
+        params: new HttpParams({ fromString: qb }),
+      })
+      .pipe(map((payload) => new Post(payload)));
   }
 
   updatePost(id: uuid, payload: FormData, query: CreateQueryParams = {}) {
@@ -64,6 +66,15 @@ export class BlogService {
     return this.http.patch<boolean>(
       `${environment.apiUrl}/posts/${postId}/react`,
       {}
+    );
+  }
+
+  toggleBookmark(postId: uuid) {
+    return this.http.post<{ id: uuid; isRemoved: boolean }>(
+      `${environment.apiUrl}/posts/${postId}/bookmark`,
+      {
+        postId,
+      }
     );
   }
 

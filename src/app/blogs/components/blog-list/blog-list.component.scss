@@ -24,6 +24,21 @@ $avatarContainer: 60px;
   margin: 16px 0;
   .mat-card-header {
     position: relative;
+    mat-icon {
+      &.bookmark {
+        @include icon-size(28px);
+        position: absolute;
+        top: -6px;
+        right: 16px;
+        cursor: pointer;
+      }
+      &.bookmark--active {
+        color: #ff4081;
+      }
+      &.bookmark--deactive {
+        color: #9c9c9c;
+      }
+    }
     .bg-container {
       background-position: center;
       background-size: cover;

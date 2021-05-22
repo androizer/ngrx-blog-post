@@ -6,6 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { noop } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -24,9 +25,10 @@ import { BlogService, CommentService } from '../../services';
 export class BlogDetailComponent implements OnInit {
   constructor(
     private readonly activatedRoute: ActivatedRoute,
-    private readonly blogService: BlogService,
-    private readonly commentService: CommentService,
     private readonly renderer2: Renderer2,
+    private readonly blogService: BlogService,
+    private readonly matSnackbar: MatSnackBar,
+    private readonly commentService: CommentService,
     private readonly authService: AuthService
   ) {
     this.commentControl = new FormControl(null, [Validators.required]);
@@ -105,8 +107,12 @@ export class BlogDetailComponent implements OnInit {
   toggleUpvote(postId: uuid) {
     // optimistic update
     this.post.isUpvoted = !this.post.isUpvoted;
-    this.blogService
-      .toggleVote(postId)
-      .subscribe(noop, () => (this.post.isUpvoted = !this.post.isUpvoted));
+    this.blogService.toggleVote(postId).subscribe(noop, () => {
+      this.post.isUpvoted = !this.post.isUpvoted;
+      this.matSnackbar.open('Something bad happened!', 'OK', {
+        direction: 'rtl',
+        horizontalPosition: 'end',
+      });
+    });
   }
 }

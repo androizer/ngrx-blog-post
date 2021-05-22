@@ -12,8 +12,11 @@ export class User {
   password: string;
   role: Role[];
   posts: Post[];
+  postIds: uuid[];
   comments: Comment[];
+  commentIds: uuid[];
   avatar: Image;
+  bookmarkIds: uuid[];
   createdBy?: uuid;
   modifiedBy?: uuid;
   createdOn?: Date;
@@ -29,7 +32,10 @@ export class User {
     this.password = data.password;
     this.role = data.role;
     this.posts = data.posts ?? [];
+    this.postIds = data.postIds;
     this.comments = data.comments ?? [];
+    this.commentIds = data.commentIds;
+    this.bookmarkIds = data.bookmarkIds;
     this.createdBy = data.createdBy;
     this.modifiedBy = data.modifiedBy;
     this.createdOn = data.createdOn;
