@@ -4,9 +4,16 @@ import { User } from './models';
 
 export const login = createAction(
   '[Login Page] User Action',
-  props<{ user: User }>()
+  props<{ email: string, password: string }>()
 );
 
-export const logout = createAction(
-    '[Sidenav] Logout Menu'
-)
+export const saveUser = createAction(
+  '[Login/Refresh] Side Effect',
+  props<{ user: User, routeToBlogs: boolean }>()
+);
+
+export const logout = createAction('[Sidenav] Logout Menu');
+
+export const loginFail = createAction(
+  '[Login Failure] Side Effect',
+);

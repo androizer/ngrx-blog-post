@@ -13,3 +13,8 @@ export const logoutSelector = createSelector(
   loginSelector,
   (isLoggedIn) => !isLoggedIn
 );
+
+export const currentUserSelector = createSelector(
+  authFeatureSelector,
+  (authState) => authState?.user
+);

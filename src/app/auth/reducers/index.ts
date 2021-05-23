@@ -13,7 +13,7 @@ export const initialAuthState: AuthState = { user: null };
 
 export const reducers = createReducer(
   initialAuthState,
-  on(AuthActions.login, (state, action): AuthState => {
+  on(AuthActions.saveUser, (state, action): AuthState => {
     return {
       user: action.user,
     };

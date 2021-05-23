@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { tap } from 'rxjs/operators';
+import { catchError, concatMap, map, tap } from 'rxjs/operators';
+import { AuthService } from '../core/services';
 
 import { AuthActions } from './auth-action.types';
 
@@ -13,15 +16,35 @@ export class AuthEffects {
     () => {
       return this.action$.pipe(
         ofType(AuthActions.login),
-        tap((action) => {
-          localStorage.setItem(USER_KEY, action.user.email);
-          localStorage.setItem(PASSWORD_KEY, action.user.password);
+        concatMap(({ email, password }) => {
+          return this.authService.login(email, password).pipe(
+            map((user) => {
+              return AuthActions.saveUser({ user, routeToBlogs: true });
+            }),
+            catchError(async () => {
+              this.matSnackbar.open('Login Failed!', 'OK');
+              return AuthActions.loginFail();
+            })
+          );
         })
       );
     },
-    {
-      dispatch: false,
-    }
+  );
+
+  saveUser$ = createEffect(
+    () => {
+      return this.action$.pipe(
+        ofType(AuthActions.saveUser),
+        tap(({ user, routeToBlogs }) => {
+          if (routeToBlogs) {
+            setTimeout(() => {
+              this.router.navigate(['blogs']);
+            }, 1000);
+          }
+        })
+      );
+    },
+    { dispatch: false }
   );
 
   logout$ = createEffect(
@@ -36,5 +59,11 @@ export class AuthEffects {
     },
     { dispatch: false }
   );
-  constructor(private readonly action$: Actions) {}
+
+  constructor(
+    private readonly action$: Actions,
+    private readonly authService: AuthService,
+    private readonly matSnackbar: MatSnackBar,
+    private readonly router: Router
+  ) {}
 }

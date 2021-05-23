@@ -17,7 +17,8 @@ export class BlogService {
   ) {}
 
   getAllPost(query: CreateQueryParams = {}) {
-    const qb = RequestQueryBuilder.create(query).query();
+    const queryObj = { ...this._getBlogQueryObj(), ...query };
+    const qb = RequestQueryBuilder.create(queryObj).query();
     return this.http
       .get<CrudListResponse<Post>>(`${environment.apiUrl}/posts`, {
         params: new HttpParams({ fromString: qb }),
@@ -42,14 +43,16 @@ export class BlogService {
   }
 
   createPost(payload: FormData, query: CreateQueryParams = {}) {
-    const qb = RequestQueryBuilder.create(query).query();
+    const queryObj = { ...this._getBlogQueryObj(), ...query };
+    const qb = RequestQueryBuilder.create(queryObj).query();
     return this.http.post<Post>(`${environment.apiUrl}/posts`, payload, {
       params: new HttpParams({ fromString: qb }),
     });
   }
 
   updatePost(id: uuid, payload: FormData, query: CreateQueryParams = {}) {
-    const qb = RequestQueryBuilder.create(query).query();
+    const queryObj = { join: [{ field: 'image' }], ...query };
+    const qb = RequestQueryBuilder.create(queryObj).query();
     return this.http.patch<Partial<Post>>(
       `${environment.apiUrl}/posts/${id}`,
       payload,
@@ -77,6 +80,17 @@ export class BlogService {
   }
 
   // Private functions
+  private _getBlogQueryObj(): CreateQueryParams {
+    return {
+      join: [
+        { field: 'author' },
+        { field: 'image' },
+        { field: 'comments', select: ['id'] },
+        { field: 'author.avatar' },
+      ],
+    };
+  }
+
   /**
    * Converts ArrayBuffer to Base64 SafeURL
    * @param imgBuffer ArrayBuffer

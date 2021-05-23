@@ -12,7 +12,8 @@ export class CommentService {
   constructor(private readonly http: HttpClient) {}
 
   getAllComments(query: CreateQueryParams = {}) {
-    const qb = RequestQueryBuilder.create(query).query();
+    const queryObj = { ...this._getCommentSortQuery(), ...query };
+    const qb = RequestQueryBuilder.create(queryObj).query();
     return this.http
       .get<CrudListResponse<Comment>>(`${environment.apiUrl}/comments`, {
         params: new HttpParams({ fromString: qb }),
@@ -43,5 +44,9 @@ export class CommentService {
         { params: new HttpParams({ fromString: qb }) }
       )
       .pipe(map((payload) => new Comment(payload)));
+  }
+
+  private _getCommentSortQuery(): CreateQueryParams {
+    return { sort: { field: 'createdOn', order: 'DESC' } };
   }
 }

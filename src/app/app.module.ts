@@ -20,6 +20,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { AuthModule } from './auth/auth.module';
 import { AuthInterceptor } from './auth/interceptors';
 import { CoreModule } from './core/core.module';
 import { AuthService } from './core/services';
@@ -41,12 +42,13 @@ import { reducers } from './reducers';
     MatListModule,
     MatSnackBarModule,
     CoreModule,
+    AuthModule.forRoot(),
     StoreModule.forRoot(reducers, {
       runtimeChecks: {
         strictActionImmutability: true,
-        strictActionSerializability: true,
+        // strictActionSerializability: true,
         strictStateImmutability: true,
-        strictStateSerializability: true,
+        // strictStateSerializability: true,
       },
     }),
     StoreDevtoolsModule.instrument({

@@ -1,17 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { noop } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { AuthService } from '../../../core/services';
-import { AuthActions } from '../../auth-action.types';
+import {Component, OnInit} from '@angular/core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Store} from '@ngrx/store';
+
+import {AuthActions} from '../../auth-action.types';
 
 @Component({
   selector: 'app-login',
@@ -20,9 +11,6 @@ import { AuthActions } from '../../auth-action.types';
 })
 export class LoginComponent implements OnInit {
   constructor(
-    private readonly authService: AuthService,
-    private readonly router: Router,
-    private readonly matSnackbar: MatSnackBar,
     private readonly store: Store
   ) {}
 
@@ -43,17 +31,7 @@ export class LoginComponent implements OnInit {
   onFormSubmit() {
     if (this.formGroup.valid) {
       const { email, password } = this.formGroup.value;
-      this.authService
-        .login(email, password)
-        .pipe(
-          tap((user) => {
-            this.store.dispatch(AuthActions.login({ user }));
-            this.router.navigate(['blogs']);
-          })
-        )
-        .subscribe(noop, () => {
-          this.matSnackbar.open('Login Failed!', 'OK');
-        });
+      this.store.dispatch(AuthActions.login({ email, password }));
     }
   }
 }

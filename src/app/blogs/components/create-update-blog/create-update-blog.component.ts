@@ -9,10 +9,14 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Update } from '@ngrx/entity';
+import { Store } from '@ngrx/store';
 import { concatMap } from 'rxjs/operators';
-import { uuid } from '../../../core/types';
-import { Post } from '../../models';
+import { currentUserSelector } from 'src/app/auth/auth.selector';
 
+import { uuid } from '../../../core/types';
+import { BlogsAction } from '../../action.types';
+import { Post } from '../../models';
 import { BlogService } from '../../services';
 
 @Component({
@@ -25,7 +29,8 @@ export class CreateUpdateBlogComponent implements OnInit {
     private readonly activatedRoute: ActivatedRoute,
     private readonly blogService: BlogService,
     private readonly renderer2: Renderer2,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly store: Store
   ) {
     this.formGroup = new FormGroup({
       coverImage: new FormControl(null),
@@ -116,17 +121,20 @@ export class CreateUpdateBlogComponent implements OnInit {
       formData.append('tags', JSON.stringify(post.tags));
       if (!this.postId) {
         // Create new POST
-        this.blogService.createPost(formData).subscribe(() => {
-          this.router.navigate(['/blogs']);
-        });
+        // this.store.select(currentUserSelector).subscribe(user => {
+        //   console.log(user);
+        // });
+        this.store.dispatch(BlogsAction.addBlog({ formData }));
       } else {
         if (this.post.image && !this.isImageSaved) {
           formData.append('deleteCoverImg', 'true');
         }
         // Update the existing POST
-        this.blogService.updatePost(this.postId, formData).subscribe(() => {
-          this.router.navigate(['/blogs']);
-        });
+        const update: Update<Post> = {
+          id: this.postId,
+          changes: post,
+        };
+        this.store.dispatch(BlogsAction.editBlog({ update, formData }));
       }
     }
   }

@@ -1,15 +1,14 @@
-import {
-  Component,
-  ElementRef,
-  OnInit,
-  Renderer2,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { concatMap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { iif, of } from 'rxjs';
+import { concatMap, filter, map, tap } from 'rxjs/operators';
 
 import { uuid } from '../../../core/types';
+import { BlogsAction, CommentActions } from '../../action.types';
+import { selectBlog } from '../../blogs.selector';
+import { filterCommentSelector } from '../../comments.selector';
 import { Post } from '../../models';
 import { BlogService, CommentService } from '../../services';
 
@@ -23,7 +22,8 @@ export class BlogDetailComponent implements OnInit {
     private readonly activatedRoute: ActivatedRoute,
     private readonly blogService: BlogService,
     private readonly commentService: CommentService,
-    private readonly renderer2: Renderer2
+    private readonly renderer2: Renderer2,
+    private readonly store: Store
   ) {
     this.commentControl = new FormControl(null, [Validators.required]);
   }
@@ -47,22 +47,35 @@ export class BlogDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.postId = this.activatedRoute.snapshot.params.id;
-    this.blogService
-      .getPostById(this.postId, {
-        join: [
-          { field: 'comments' },
-          { field: 'author' },
-          { field: 'image' },
-          { field: 'author.avatar' },
-          { field: 'comments.author' },
-          { field: 'comments.author.avatar' },
-        ],
-        sort: { field: 'comments.createdOn', order: 'DESC' },
-      })
-      .pipe(concatMap((item) => this.blogService.appendBase64Url(item)))
-      .subscribe((payload) => {
-        this.post = payload;
-        this.setCoverImage();
+    let commentIdList = [];
+    this.store
+      .select(selectBlog(this.postId))
+      .pipe(
+        concatMap((post) => {
+          if (!post) {
+            this.store.dispatch(BlogsAction.loadAllBlogs());
+            return this.store.select(selectBlog(this.postId));
+          }
+          return of(post);
+        }),
+        filter(post => !!post),
+        tap((post) => {
+          // creating copy and then assignment as we are mutating this.post object later
+          this.post = Object.assign({}, post);
+          this.setCoverImage();
+          commentIdList = post.comments.map((comment) => comment.id);
+          this.store.dispatch(
+            CommentActions.getComment({
+              commentIdList,
+            })
+          );
+        }),
+        concatMap(() =>
+          this.store.select(filterCommentSelector(commentIdList))
+        )
+      )
+      .subscribe((comments) => {
+          this.post.comments = comments;
       });
   }
 

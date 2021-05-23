@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,7 +11,6 @@ import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 
-import { AuthRoutingModule } from './auth-routing.module';
 import { AuthEffects } from './auth.effects';
 import { LoginComponent, RegisterComponent } from './components';
 import * as fromAuth from './reducers';
@@ -20,7 +19,6 @@ import * as fromAuth from './reducers';
   declarations: [LoginComponent, RegisterComponent],
   imports: [
     CommonModule,
-    AuthRoutingModule,
     RouterModule,
     FlexLayoutModule,
     MatFormFieldModule,
@@ -35,4 +33,10 @@ import * as fromAuth from './reducers';
     EffectsModule.forFeature([AuthEffects]),
   ],
 })
-export class AuthModule {}
+export class AuthModule {
+  static forRoot(): ModuleWithProviders<AuthModule> {
+    return {
+      ngModule: AuthModule,
+    };
+  }
+}
