@@ -13,13 +13,14 @@ export interface BlogsState extends EntityState<Post> {
 export const blogsAdapter = createEntityAdapter<Post>({});
 
 export const initialBlogsState = blogsAdapter.getInitialState({
+  // additional entity state properties
   hasLoaded: false,
 });
 
 export const blogsReducer = createReducer(
   initialBlogsState,
   on(BlogsAction.allBlogsLoaded, (state, action) =>
-    blogsAdapter.upsertMany(action.posts, { hasLoaded: true, ...state })
+    blogsAdapter.upsertMany(action.posts, { ...state, hasLoaded: true })
   ),
   on(BlogsAction.blogUpdatedSuccess, (state, action) =>
     blogsAdapter.updateOne(action.update, state)

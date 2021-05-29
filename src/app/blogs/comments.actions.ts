@@ -12,6 +12,21 @@ export const addComments = createAction(
     props<{ comments: Comment[] }>()
 )
 
-export const emptyAction = createAction(
+export const addOneComment = createAction(
+    "[Blog Details] Add Comment",
+    props<{ content: string, postId: string }>()
+)
+
+export const addOneCommentSuccess = createAction(
+    "[Add Comment] Success Side Effect",
+    props<{ comment: Comment }>()
+)
+
+export const addOneCommentFailure = createAction(
+    "[Add Comment] Failure Side Effect",
+)
+
+export const updateStoreComments = createAction(
     "[EmptyAction] Side Effect",
+    props<{ comments: Comment[] }>()
 )

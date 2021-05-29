@@ -44,12 +44,12 @@ import { reducers } from './reducers';
     CoreModule,
     AuthModule.forRoot(),
     StoreModule.forRoot(reducers, {
-      runtimeChecks: {
-        strictActionImmutability: true,
-        // strictActionSerializability: true,
-        strictStateImmutability: true,
-        // strictStateSerializability: true,
-      },
+      // runtimeChecks: {
+      //   strictActionImmutability: true,
+      //   // strictActionSerializability: true,
+      //   strictStateImmutability: true,
+      //   // strictStateSerializability: true,
+      // },
     }),
     StoreDevtoolsModule.instrument({
       maxAge: 25,

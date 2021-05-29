@@ -35,3 +35,8 @@ export const blogUpdatedSuccess = createAction(
 );
 
 export const blogUpdationFailure = createAction('[Edit Blog Effect] Failure');
+
+export const addCommentToBlog = createAction(
+  "[Blog Detail] Comment Added Side Effect",
+  props<{commentId: string, postId: string}>()
+)

@@ -28,7 +28,7 @@ export class Post {
       ? data.comments.map((item) => new Comment(item))
       : [];
     this.image = data.image && new Image(data.image);
-    this.tags = data.tags ?? [];
+    this.tags = data.tags ? [...data.tags] : [];
     this.createdBy = data.createdBy;
     this.modifiedBy = data.modifiedBy;
     this.createdOn = data.createdOn;

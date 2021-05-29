@@ -20,7 +20,13 @@ export const commentsReducer = createReducer(
   initialCommentsState,
   on(CommentActions.addComments, (state, action) => {
     return commentsAdapter.upsertMany(action.comments, state);
-  })
+  }),
+  on(CommentActions.addOneCommentSuccess, (state,action) => {
+  return commentsAdapter.upsertOne(action.comment, state);    
+  }),
+  // on(CommentActions.updateStoreComments, (state, action) => {
+  //   return commentsAdapter.setAll(action.comments, state);
+  // }),
 );
 
 export const commentEntitySelectors = commentsAdapter.getSelectors();

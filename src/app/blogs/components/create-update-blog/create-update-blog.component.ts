@@ -11,11 +11,12 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Update } from '@ngrx/entity';
 import { Store } from '@ngrx/store';
-import { concatMap } from 'rxjs/operators';
-import { currentUserSelector } from 'src/app/auth/auth.selector';
+import { of } from 'rxjs';
+import { concatMap, delay, filter } from 'rxjs/operators';
 
 import { uuid } from '../../../core/types';
 import { BlogsAction } from '../../action.types';
+import { selectBlog } from '../../blogs.selector';
 import { Post } from '../../models';
 import { BlogService } from '../../services';
 
@@ -52,16 +53,27 @@ export class CreateUpdateBlogComponent implements OnInit {
   ngOnInit() {
     this.postId = this.activatedRoute.snapshot.params['id'];
     if (this.postId) {
-      this.blogService
-        .getPostById(this.postId, { join: { field: 'image' } })
-        .pipe(concatMap((payload) => this.blogService.appendBase64Url(payload)))
-        .subscribe((payload) => {
-          this.post = payload;
+      this.store
+        .select(selectBlog(this.postId))
+        .pipe(
+          concatMap((post) => {
+            if (!post) {
+              this.store.dispatch(BlogsAction.loadAllBlogs());
+              return this.store.select(selectBlog(this.postId));
+            }
+            return of(post);
+          }),
+          filter((post) => !!post),
+          //  added delay so that we can get imageWrapper element to render image
+          delay(500)
+        )
+        .subscribe((post) => {
+          this.post = post;
           this.formGroup.patchValue({
-            ...payload,
+            ...post,
           });
-          if (payload.image?.base64Url) {
-            this.setCoverImage(payload.image.base64Url);
+          if (post.image?.base64Url) {
+            this.setCoverImage(post.image.base64Url);
           }
         });
     }
@@ -121,9 +133,6 @@ export class CreateUpdateBlogComponent implements OnInit {
       formData.append('tags', JSON.stringify(post.tags));
       if (!this.postId) {
         // Create new POST
-        // this.store.select(currentUserSelector).subscribe(user => {
-        //   console.log(user);
-        // });
         this.store.dispatch(BlogsAction.addBlog({ formData }));
       } else {
         if (this.post.image && !this.isImageSaved) {

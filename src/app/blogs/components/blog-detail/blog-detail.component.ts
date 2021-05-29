@@ -76,19 +76,21 @@ export class BlogDetailComponent implements OnInit {
       )
       .subscribe((comments) => {
           this.post.comments = comments;
+          this.commentControl.reset();
       });
   }
 
   addComment() {
     if (this.commentControl.valid) {
-      this.commentService
-        .createComment(this.commentControl.value, this.postId, {
-          join: [{ field: 'author' }, { field: 'author.avatar' }],
-        })
-        .subscribe((payload) => {
-          this.post.comments?.unshift(payload);
-          this.commentControl.reset();
-        });
+      this.store.dispatch(CommentActions.addOneComment({content: this.commentControl.value, postId: this.postId}));
+      // this.commentService
+      //   .createComment(this.commentControl.value, this.postId, {
+      //     join: [{ field: 'author' }, { field: 'author.avatar' }],
+      //   })
+      //   .subscribe((payload) => {
+      //     this.post.comments?.unshift(payload);
+      //     this.commentControl.reset();
+      //   });
     }
   }
 

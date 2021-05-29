@@ -111,12 +111,12 @@
         fxLayoutGap="8px"
       >
         <div
-          *ngIf="comment.author.avatar?.base64Url"
+          *ngIf="comment.author?.avatar?.base64Url"
           class="creator-avatar"
-          [style.background-image]="comment.author.avatar?.base64Url"
+          [style.background-image]="comment.author?.avatar?.base64Url"
         ></div>
         <mat-icon
-          *ngIf="!comment.author.avatar?.base64Url"
+          *ngIf="!comment.author?.avatar?.base64Url"
           class="creator-icon"
         >
           account_circle

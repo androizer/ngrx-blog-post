@@ -33,7 +33,14 @@ export class CommentService {
     postId: string,
     query: CreateQueryParams = {}
   ) {
-    const qb = RequestQueryBuilder.create(query).query();
+    const getAuthorAndPostQuery : CreateQueryParams = {
+      join: [
+        {field: 'author'},
+        {field: 'author.avatar'},
+        {field: 'post'}
+      ]
+    }
+    const qb = RequestQueryBuilder.create({...getAuthorAndPostQuery, ...query}).query();
     return this.http
       .post<Comment>(
         `${environment.apiUrl}/comments`,
