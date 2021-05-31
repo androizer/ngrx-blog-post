@@ -1226,6 +1226,46 @@
   resolved "https://registry.yarnpkg.com/@nestjsx/util/-/util-5.0.0-alpha.3.tgz#d1182280e9254f0d335efa369da17fa25d260135"
   integrity sha512-UTYIxtyx80M42gOZ0VIInSiOLn78P6k1BCziiN8gE3FglzivQ1RGvPpmsRwioYEWG27gOgnMwOQnXv8Zbq8dzQ==
 
+"@ngrx/effects@^12.0.0":
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/@ngrx/effects/-/effects-12.0.0.tgz#87c0aeeb760f11205c9d7c3168169e753780c926"
+  integrity sha512-T2Xu5sfYXg5+88al8laYv6sSuQzIeIfPzuY2o+XOF1407qYtafTXDjWcPosIqH0HYNBjPMWZFZbdQOHVX38mrQ==
+  dependencies:
+    tslib "^2.0.0"
+
+"@ngrx/entity@^12.0.0":
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/@ngrx/entity/-/entity-12.0.0.tgz#7a73ef0b349e2e63831ceb15c889389f0985704c"
+  integrity sha512-a5VOLE0mIB7Ro1IFbFGoddYXvjG2cxznmqsL5AnpE3A1MnubQCmQOxqHOyO1TQVMnh72IsvYDwb5YP46Hj6k+w==
+  dependencies:
+    tslib "^2.0.0"
+
+"@ngrx/router-store@11.1.1":
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/@ngrx/router-store/-/router-store-11.1.1.tgz#a4ce866b3247ceb7903f81b4af6a960d869729cf"
+  integrity sha512-KE3O43wCf0VGFFIilusgSc4G5+CA++5wYL9xvdc8/BVr6sXXmOklrhyRVU/reQqy7HdYzbIofLKox5mXE/smdA==
+  dependencies:
+    tslib "^2.0.0"
+
+"@ngrx/schematics@^12.0.0":
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/@ngrx/schematics/-/schematics-12.0.0.tgz#8cb38463a077640f24232074c26727ec4a57e920"
+  integrity sha512-fn++t/0K0rkJcqJUZ02ZpsP4kRZS0tAblGJrf/KlhK2HeaCArNwxq9cFReMvNLEsclCI4IsuJ0Hetylt8RolQg==
+
+"@ngrx/store-devtools@11.1.1":
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/@ngrx/store-devtools/-/store-devtools-11.1.1.tgz#bdefc5c03dcac6fc21fcc9e33a4a3a3464f3e2d6"
+  integrity sha512-YvTMy8HUMUiiyrzKn4KhrQzkAg2yBfLgd1PHR0yPjyzj7RCaYZHwhq6sP0+AiFMBi1Lat8Wczy7SwwLTa6aZ3w==
+  dependencies:
+    tslib "^2.0.0"
+
+"@ngrx/store@11.1.1":
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/@ngrx/store/-/store-11.1.1.tgz#e971d767ae5caa8984daad23cda38c6fd94dc888"
+  integrity sha512-tkeKoyYo631hLJ1I8+bm9EWoi7E0A3i4IMjvf956Vpu5IdMnP6d0HW3lKU/ruhFD5YOXAHcUgEIWyfxxILABag==
+  dependencies:
+    tslib "^2.0.0"
+
 "@ngtools/webpack@11.2.10":
   version "11.2.10"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-11.2.10.tgz#b341c2dd20b6c2b6be466960fbd9e51a563ef326"

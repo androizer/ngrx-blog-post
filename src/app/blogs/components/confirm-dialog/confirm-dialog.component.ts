@@ -1,11 +1,13 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 
 interface MatDialogData {
   title: string;
   description: string;
   onConfirm: () => void;
   onCancel: () => void;
+  loading?: Observable<boolean>;
 }
 
 @Component({

@@ -7,6 +7,12 @@
   </div>
   <div fxLayoutAlign="end center" fxLayoutGap="1rem" class="dialog-actions">
     <button mat-flat-button (click)="onCancel()">Cancel</button>
-    <button mat-flat-button (click)="onConfirm()">OK</button>
+    <button
+      mat-flat-button
+      (click)="onConfirm()"
+      [disabled]="dialogData?.loading | async"
+    >
+      OK
+    </button>
   </div>
 </div>

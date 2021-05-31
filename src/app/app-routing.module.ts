@@ -9,10 +9,6 @@ const routes: Routes = [
     redirectTo: '/auth/login',
   },
   {
-    path: 'auth',
-    loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
-  },
-  {
     path: 'blogs',
     loadChildren: () =>
       import('./blogs/blogs.module').then((m) => m.BlogsModule),

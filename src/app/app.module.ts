@@ -9,12 +9,22 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {
+  NavigationActionTiming,
+  RouterState,
+  StoreRouterConnectingModule,
+} from '@ngrx/router-store';
+import { Store, StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { AuthModule } from './auth/auth.module';
 import { AuthInterceptor } from './auth/interceptors';
 import { CoreModule } from './core/core.module';
-import { AuthService } from './core/services';
+import { globalReducers, metaReducers } from './core/redux/reducers';
+import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,7 +33,6 @@ import { AuthService } from './core/services';
     BrowserAnimationsModule,
     HttpClientModule,
     FlexLayoutModule,
-    AppRoutingModule,
     MatToolbarModule,
     MatButtonModule,
     MatButtonModule,
@@ -32,6 +41,18 @@ import { AuthService } from './core/services';
     MatListModule,
     MatSnackBarModule,
     CoreModule,
+    AuthModule,
+    AppRoutingModule,
+    StoreModule.forRoot(globalReducers, { metaReducers }),
+    EffectsModule.forRoot(),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: environment.production,
+    }),
+    StoreRouterConnectingModule.forRoot({
+      routerState: RouterState.Minimal,
+      navigationActionTiming: NavigationActionTiming.PostActivation,
+    }),
   ],
   bootstrap: [AppComponent],
   providers: [
@@ -39,7 +60,7 @@ import { AuthService } from './core/services';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true,
-      deps: [AuthService],
+      deps: [Store],
     },
   ],
 })

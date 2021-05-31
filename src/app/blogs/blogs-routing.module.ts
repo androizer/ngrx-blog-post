@@ -1,15 +1,20 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
 import {
   BlogDetailComponent,
   BlogListComponent,
   CreateUpdateBlogComponent,
 } from './components';
+import { GetPostByIdResolver, PostResolver } from './resolvers';
 
 const routes: Routes = [
   {
     path: '',
     component: BlogListComponent,
+    resolve: {
+      posts: PostResolver,
+    },
   },
   {
     path: 'new',
@@ -18,10 +23,16 @@ const routes: Routes = [
   {
     path: ':id',
     component: BlogDetailComponent,
+    resolve: {
+      post: GetPostByIdResolver,
+    },
   },
   {
     path: ':id/edit',
     component: CreateUpdateBlogComponent,
+    resolve: {
+      post: GetPostByIdResolver,
+    },
   },
 ];
 

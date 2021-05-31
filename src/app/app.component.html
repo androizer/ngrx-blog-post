@@ -7,11 +7,13 @@
       <span>Blog App</span>
     </span>
     <span fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1rem">
-      <label class="username">{{authService.getCurrentUser()?.fullName}}</label>
-      <div
-        class="user-avatar"
-        [style.background-image]="authService.getCurrentUser()?.avatar?.base64Url"
-      ></div>
+      <ng-container *ngIf="currentUser$ | async as currentUser">
+        <label class="username">{{ currentUser?.fullName }}</label>
+        <div
+          class="user-avatar"
+          [style.background-image]="currentUser?.avatar?.base64Url"
+        ></div>
+      </ng-container>
     </span>
   </mat-toolbar>
 
@@ -29,22 +31,26 @@
 <ng-template #navbar>
   <div style="width: 250px">
     <mat-nav-list>
-      <a mat-list-item routerLink="/auth/login">
-        <mat-icon matListIcon color="primary">login</mat-icon>
-        <span mat-line>Login</span>
-      </a>
-      <a mat-list-item routerLink="/auth/register">
-        <mat-icon matListIcon color="primary">app_registration</mat-icon>
-        <span mat-line>Register</span>
-      </a>
-      <a mat-list-item routerLink="/auth/login" (click)="logout()">
-        <mat-icon matListIcon color="primary">logout</mat-icon>
-        <span mat-line>Logout</span>
-      </a>
-      <a mat-list-item routerLink="/blogs">
-        <mat-icon matListIcon color="primary">article</mat-icon>
-        <span mat-line>Blogs</span>
-      </a>
+      <ng-container *ngIf="isLoggedOut$ | async">
+        <a mat-list-item routerLink="/auth/login">
+          <mat-icon matListIcon color="primary">login</mat-icon>
+          <span mat-line>Login</span>
+        </a>
+        <a mat-list-item routerLink="/auth/register">
+          <mat-icon matListIcon color="primary">app_registration</mat-icon>
+          <span mat-line>Register</span>
+        </a>
+      </ng-container>
+      <ng-container *ngIf="isLoggedIn$ | async">
+        <a mat-list-item routerLink="/auth/login" (click)="logout()">
+          <mat-icon matListIcon color="primary">logout</mat-icon>
+          <span mat-line>Logout</span>
+        </a>
+        <a mat-list-item routerLink="/blogs">
+          <mat-icon matListIcon color="primary">article</mat-icon>
+          <span mat-line>Blogs</span>
+        </a>
+      </ng-container>
     </mat-nav-list>
   </div>
 </ng-template>

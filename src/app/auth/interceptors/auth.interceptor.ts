@@ -5,64 +5,109 @@ import {
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, concatMap, filter, switchMap, take } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  filter,
+  first,
+  mergeMap,
+  switchMap,
+  take,
+} from 'rxjs/operators';
 
-import { AuthService } from '../../core/services';
+import { AuthActions } from '../redux/auth.actions';
+import { AuthSelectors } from '../redux/auth.selectors';
 
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly store: Store) {}
 
   readonly tokenBSubject = new BehaviorSubject<string>(null);
   isTokenRefreshing = false;
 
-  get isTokenExpired() {
-    return this.authService.isTokenExpired();
+  isTokenExpired(expiresIn: number) {
+    if (typeof expiresIn === 'number') {
+      return Date.now() > expiresIn;
+    }
+    return false;
   }
 
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    return next.handle(this.attachToken(req)).pipe(
+    return this.attachToken$(req, next).pipe(
+      first(),
+      concatMap((reqWithToken) => next.handle(reqWithToken)),
       catchError((err) => {
-        if (
-          err instanceof HttpErrorResponse &&
-          err.status === 401 &&
-          this.isTokenExpired
-        ) {
-          return this.handleRefreshToken(req, next);
-        }
-        return throwError(err);
+        return this.store.select(AuthSelectors.expiresIn).pipe(
+          mergeMap((expiresIn) => {
+            if (
+              err instanceof HttpErrorResponse &&
+              err.status === 401 &&
+              this.isTokenExpired(expiresIn)
+            ) {
+              return this.handleRefreshToken(req, next);
+            }
+            return throwError(err);
+          })
+        );
       })
     );
   }
 
-  attachToken(req: HttpRequest<any>) {
-    const accessToken = this.authService.getAccessToken();
-    req = req.clone({
-      headers: req.headers.set('Authorization', `Bearer ${accessToken}`),
-    });
-    return req;
+  attachToken$(req: HttpRequest<any>, next: HttpHandler) {
+    return this.store.select(AuthSelectors.accessToken).pipe(
+      first(),
+      mergeMap((token) => {
+        if (token) {
+          req = req.clone({
+            headers: req.headers.set('Authorization', `Bearer ${token}`),
+          });
+        }
+        return of(req);
+      })
+    );
   }
 
-  handleRefreshToken(req: HttpRequest<any>, next: HttpHandler) {
+  handleRefreshToken(
+    req: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
     if (!this.isTokenRefreshing) {
       this.isTokenRefreshing = true;
       this.tokenBSubject.next(null);
-
-      return this.authService.refreshToken().pipe(
-        concatMap((payload) => {
-          this.isTokenRefreshing = false;
-          this.tokenBSubject.next(payload.accessToken);
-          return next.handle(this.attachToken(req));
-        })
+      // * make sure to clear existing accessToken and expiresIn
+      // * so that it doesn't reuse the same old token
+      return of(
+        this.store.dispatch(AuthActions.refreshTokenRequestedByInterceptor())
+      ).pipe(
+        concatMap(() =>
+          this.store.select(AuthSelectors.accessToken).pipe(
+            filter((token) => !!token),
+            first(),
+            concatMap((token) => {
+              this.isTokenRefreshing = false;
+              this.tokenBSubject.next(token);
+              return this.attachToken$(req, next).pipe(
+                first(),
+                mergeMap((reqWithToken) => next.handle(reqWithToken))
+              );
+            })
+          )
+        )
       );
     } else {
       return this.tokenBSubject.pipe(
         filter((token) => !!token),
         take(1),
-        switchMap(() => next.handle(this.attachToken(req)))
+        switchMap(() =>
+          this.attachToken$(req, next).pipe(
+            first(),
+            mergeMap((reqWithToken) => next.handle(reqWithToken))
+          )
+        )
       );
     }
   }

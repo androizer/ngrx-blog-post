@@ -29,16 +29,16 @@ export class Post {
     this.id = data.id;
     this.title = data.title;
     this.content = data.content;
-    this.votes = data.votes ?? [];
+    this.votes = [...data.votes];
     this.author = data.author && new User(data.author);
     this.authorId = data.authorId;
     this.comments = data.comments
       ? data.comments.map((item) => new Comment(item))
       : [];
-    this.commentIds = data.commentIds;
+    this.commentIds = [...data.commentIds];
     this.image = data.image && new Image(data.image);
-    this.tags = data.tags ?? [];
-    this.bookmarkedIds = data?.bookmarkedIds ?? [];
+    this.tags = [...data.tags];
+    this.bookmarkedIds = [...data.bookmarkedIds];
     this.createdBy = data.createdBy;
     this.modifiedBy = data.modifiedBy;
     this.createdOn = data.createdOn;

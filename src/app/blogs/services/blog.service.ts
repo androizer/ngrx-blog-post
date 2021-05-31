@@ -59,23 +59,40 @@ export class BlogService {
   }
 
   deletePost(id: uuid) {
-    return this.http.delete(`${environment.apiUrl}/posts/${id}`);
+    return this.http
+      .delete(`${environment.apiUrl}/posts/${id}`)
+      .pipe(map((obj) => ({ ...obj, id })));
   }
 
   toggleVote(postId: uuid) {
-    return this.http.patch<boolean>(
-      `${environment.apiUrl}/posts/${postId}/react`,
-      {}
-    );
+    return this.http
+      .patch<Pick<Post, 'votes'>>(
+        `${environment.apiUrl}/posts/${postId}/react`,
+        {}
+      )
+      .pipe(
+        map((post) => {
+          return { ...post, id: postId } as Pick<Post, 'votes' | 'id'>;
+        })
+      );
   }
 
   toggleBookmark(postId: uuid) {
-    return this.http.post<{ id: uuid; isRemoved: boolean }>(
-      `${environment.apiUrl}/posts/${postId}/bookmark`,
-      {
-        postId,
-      }
-    );
+    return this.http
+      .post<{ id: uuid; isRemoved: boolean }>(
+        `${environment.apiUrl}/posts/${postId}/bookmark`,
+        {
+          postId,
+        }
+      )
+      .pipe(
+        map((payload) => {
+          return {
+            ...payload,
+            postId,
+          };
+        })
+      );
   }
 
   // Private functions

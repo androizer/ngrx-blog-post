@@ -8,8 +8,8 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../core/services';
 
+import { AuthService } from '../../../core/services';
 import { ConfirmPasswordValidator } from './confirm-password.validator';
 
 @Component({
