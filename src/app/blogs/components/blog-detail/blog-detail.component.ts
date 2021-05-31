@@ -8,14 +8,16 @@ import {
 import { FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
-import { noop } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Actions, ofType } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { forkJoin, Observable, of } from 'rxjs';
+import { concatMap, filter, first, map, takeUntil, tap } from 'rxjs/operators';
 
-import { User } from '../../../auth/models';
-import { AuthService } from '../../../core/services';
+import { AuthSelectors } from '../../../auth/redux/auth.selectors';
 import { uuid } from '../../../core/types';
 import { Post } from '../../models';
-import { BlogService, CommentService } from '../../services';
+import { CommentActions, PostActions } from '../../redux/actions';
+import { CommentSelectors, PostSelectors } from '../../redux/selectors';
 
 @Component({
   selector: 'app-blog-detail',
@@ -26,10 +28,9 @@ export class BlogDetailComponent implements OnInit {
   constructor(
     private readonly activatedRoute: ActivatedRoute,
     private readonly renderer2: Renderer2,
-    private readonly blogService: BlogService,
     private readonly matSnackbar: MatSnackBar,
-    private readonly commentService: CommentService,
-    private readonly authService: AuthService
+    private readonly store: Store,
+    private readonly action$: Actions
   ) {
     this.commentControl = new FormControl(null, [Validators.required]);
   }
@@ -49,46 +50,51 @@ export class BlogDetailComponent implements OnInit {
 
   post: Partial<Post> = {};
   commentControl: FormControl;
-  postId: uuid = '';
-  currentUser: User;
+  postId: uuid;
+  error$: Observable<Action>;
 
   ngOnInit(): void {
-    this.currentUser = this.authService.getCurrentUser();
     this.postId = this.activatedRoute.snapshot.params.id;
-    this.blogService
-      .getPostById(this.postId, {
-        join: [
-          { field: 'comments' },
-          { field: 'author' },
-          { field: 'image' },
-          { field: 'author.avatar' },
-          { field: 'comments.author' },
-          { field: 'comments.author.avatar' },
-        ],
-        sort: { field: 'comments.createdOn', order: 'DESC' },
+    this.error$ = this.action$.pipe(
+      ofType(PostActions.queryOneError),
+      tap(() => {
+        this.matSnackbar.open('Error while fetching Post!', 'OK');
       })
+    );
+    this.store
+      .select(PostSelectors.getById(this.postId))
       .pipe(
-        map((payload) => {
+        takeUntil(this.error$),
+        filter((post) => !!post),
+        concatMap((post) => this._combineRelatedStreams(post)),
+        map(([post, comments, user]) => {
           return {
-            ...payload,
-            isUpvoted: payload.votes.includes(this.currentUser.id),
-          };
+            ...post,
+            comments,
+            isUpvoted: post.votes.includes(user.id),
+          } as Post;
         })
       )
-      .subscribe((payload) => {
-        this.post = payload;
+      .subscribe((post) => {
+        this.post = post;
         this.setCoverImage();
       });
   }
 
   addComment() {
     if (this.commentControl.valid) {
-      this.commentService
-        .createComment(this.commentControl.value, this.postId, {
-          join: [{ field: 'author' }, { field: 'author.avatar' }],
+      const comment = this.commentControl.value;
+      // create comment using store
+      this.store.dispatch(
+        CommentActions.createOne({
+          comment,
+          postId: this.postId,
+          query: { join: [{ field: 'author' }, { field: 'author.avatar' }] },
         })
-        .subscribe((payload) => {
-          this.post.comments?.unshift(payload);
+      );
+      this.action$
+        .pipe(ofType(CommentActions.createOneSuccess))
+        .subscribe(() => {
           this.commentControl.reset();
         });
     }
@@ -104,15 +110,28 @@ export class BlogDetailComponent implements OnInit {
     }
   }
 
-  toggleUpvote(postId: uuid) {
+  toggleUpvote(post: Partial<Post>) {
     // optimistic update
-    this.post.isUpvoted = !this.post.isUpvoted;
-    this.blogService.toggleVote(postId).subscribe(noop, () => {
-      this.post.isUpvoted = !this.post.isUpvoted;
+    this.store.dispatch(PostActions.toggleUpvote({ post }));
+    this.action$.pipe(ofType(PostActions.toggleUpvoteError)).subscribe(() => {
       this.matSnackbar.open('Something bad happened!', 'OK', {
         direction: 'rtl',
         horizontalPosition: 'end',
       });
     });
+  }
+
+  private _combineRelatedStreams(post: Post) {
+    return forkJoin([
+      of(post),
+      this.store.select(CommentSelectors.filterByIds(post.commentIds)).pipe(
+        filter((comments) => comments.length === post.commentIds.length),
+        first()
+      ),
+      this.store.select(AuthSelectors.currentUser).pipe(
+        filter((user) => !!user),
+        first()
+      ),
+    ]);
   }
 }

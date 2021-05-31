@@ -5,30 +5,38 @@
   fxLayoutAlign="center center"
   fxLayoutGap="32px"
 >
-  <ng-container
-    *ngFor="let item of allPost"
-    [ngTemplateOutlet]="blogCard"
-    [ngTemplateOutletContext]="{ post: item }"
-  >
+  <ng-container *ngIf="currentUser$ | async as user">
+    <ng-container
+      *ngFor="let item of allPost$ | async"
+      [ngTemplateOutlet]="blogCard"
+      [ngTemplateOutletContext]="{ post: item, user: user }"
+    >
+    </ng-container>
   </ng-container>
 </div>
 <!-- Fab Button -->
-<button mat-fab color="accent" class="fab-add" routerLink="new">
+<button
+  mat-fab
+  color="accent"
+  class="fab-add"
+  routerLink="/blogs/new"
+  matTooltip="Add New Post"
+>
   <mat-icon>add</mat-icon>
 </button>
 
-<ng-template #blogCard let-post="post">
+<ng-template #blogCard let-post="post" let-user="user">
   <mat-card class="blog-card">
     <div class="mat-card-header">
       <mat-icon
         *ngIf="!post.isBookmarked"
-        (click)="toggleBookmark(post.id)"
+        (click)="toggleBookmark(post)"
         class="bookmark bookmark--deactive"
         >bookmark_border</mat-icon
       >
       <mat-icon
         *ngIf="post.isBookmarked"
-        (click)="toggleBookmark(post.id)"
+        (click)="toggleBookmark(post)"
         class="bookmark bookmark--active"
         >bookmark</mat-icon
       >
@@ -48,7 +56,7 @@
     >
       <div fxLayout fxLayoutAlign="end center" class="blog-actions">
         <button
-          *ngIf="currentUser.id === post.authorId"
+          *ngIf="user.id === post.authorId"
           mat-icon-button
           [matMenuTriggerFor]="menu"
           [matMenuTriggerData]="{ post: post }"

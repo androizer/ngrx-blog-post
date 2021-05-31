@@ -77,7 +77,7 @@
       <button
         mat-icon-button
         matTooltip="Thumbs Up"
-        (click)="toggleUpvote(post.id)"
+        (click)="toggleUpvote(post)"
       >
         <mat-icon
           [ngClass]="{
@@ -87,6 +87,13 @@
           >thumb_up</mat-icon
         >
       </button>
+      <span *ngIf="post.votes?.length" class="upvote-subtitle">
+        ({{
+          post.isUpvoted
+            ? "including you and " + (post.votes.length - 1) + " others"
+            : "+" + post.votes.length
+        }})
+      </span>
     </div>
   </div>
   <div class="post-actions" fxLayoutAlign="center center" fxLayoutGap="8px">
@@ -95,7 +102,9 @@
     </span>
     <span fxLayout fxLayoutAlign="start center" fxLayoutGap="8px">
       <span class="dot-separator"></span>
-      <span class="created-on">{{ post.createdOn | date }}</span>
+      <span class="created-on">
+        {{ post.createdOn | date: "MMM d, y h:mm a" }}
+      </span>
     </span>
   </div>
 </ng-template>
@@ -134,7 +143,9 @@
         <span class="creator-title">{{ comment.author?.fullName }}</span>
       </span>
       <span class="pipe-separator">|</span>
-      <span class="comment-created_on">{{ comment.createdOn | date }}</span>
+      <span class="comment-created_on">{{
+        comment.createdOn | date: "MMM d, y h:mm a"
+      }}</span>
     </div>
     <div class="comment-content">
       {{ comment.content }}

@@ -46,7 +46,8 @@ export class RequestQueueService implements HttpInterceptor {
   }
 
   attachToken(req: HttpRequest<any>) {
-    const accessToken = this.authService.getAccessToken();
+    // const accessToken = this.authService.getAccessToken();
+    const accessToken = '';
     req = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${accessToken}`),
     });

@@ -9,10 +9,14 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CreateQueryParams } from '@nestjsx/crud-request';
+import { Store } from '@ngrx/store';
+import { delay, filter, first } from 'rxjs/operators';
 
 import { uuid } from '../../../core/types';
 import { Post } from '../../models';
-import { BlogService } from '../../services';
+import { PostActions } from '../../redux/actions';
+import { PostSelectors } from '../../redux/selectors';
 
 @Component({
   selector: 'app-create-update-blog',
@@ -22,9 +26,8 @@ import { BlogService } from '../../services';
 export class CreateUpdateBlogComponent implements OnInit {
   constructor(
     private readonly activatedRoute: ActivatedRoute,
-    private readonly blogService: BlogService,
     private readonly renderer2: Renderer2,
-    private readonly router: Router
+    private readonly store: Store
   ) {
     this.formGroup = new FormGroup({
       coverImage: new FormControl(null),
@@ -39,17 +42,20 @@ export class CreateUpdateBlogComponent implements OnInit {
   readonly allowedTypes = ['image/jpg', 'image/jpeg', 'image/png'];
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   formGroup: FormGroup;
-  isImageSaved!: boolean;
-  post!: Post;
-  postId!: uuid;
+  isImageSaved: boolean;
+  postId: uuid;
 
   ngOnInit() {
     this.postId = this.activatedRoute.snapshot.params['id'];
     if (this.postId) {
-      this.blogService
-        .getPostById(this.postId, { join: { field: 'image' } })
+      this.store
+        .select(PostSelectors.getById(this.postId))
+        .pipe(
+          filter((post) => !!post),
+          first(),
+          delay(1000)
+        )
         .subscribe((payload) => {
-          this.post = payload;
           this.formGroup.patchValue({
             ...payload,
           });
@@ -112,19 +118,35 @@ export class CreateUpdateBlogComponent implements OnInit {
       formData.append('title', post.title);
       formData.append('content', post.content);
       formData.append('tags', JSON.stringify(post.tags));
+      const qParams: CreateQueryParams = {
+        join: [
+          { field: 'author' },
+          { field: 'image' },
+          { field: 'author.avatar' },
+        ],
+      };
       if (!this.postId) {
         // Create new POST
-        this.blogService.createPost(formData).subscribe(() => {
-          this.router.navigate(['/blogs']);
-        });
+        this.store.dispatch(
+          PostActions.createOne({ post: formData, query: qParams })
+        );
       } else {
-        if (this.post.image && !this.isImageSaved) {
-          formData.append('deleteCoverImg', 'true');
-        }
         // Update the existing POST
-        this.blogService.updatePost(this.postId, formData).subscribe(() => {
-          this.router.navigate(['/blogs']);
-        });
+        this.store
+          .select(PostSelectors.getById(this.postId))
+          .pipe(first())
+          .subscribe((post) => {
+            if (post.image && !this.isImageSaved) {
+              formData.append('deleteCoverImg', 'true');
+            }
+            // Update the existing POST
+            this.store.dispatch(
+              PostActions.updateOne({
+                post: { id: this.postId, changes: formData },
+                query: qParams,
+              })
+            );
+          });
       }
     }
   }
@@ -142,11 +164,14 @@ export class CreateUpdateBlogComponent implements OnInit {
     const input = event.input;
     const value = event.value;
 
-    const tags = this.formGroup.get('tags')?.value as string[];
+    let tags = this.formGroup.get('tags')?.value as string[];
+
+    tags = tags.map((tag) => tag);
 
     // Add tags
     if ((value || '').trim()) {
       tags.push(value.trim());
+      this.formGroup.get('tags').patchValue(tags);
     }
 
     // Reset the input value

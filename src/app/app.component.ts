@@ -1,9 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { NavigationEnd, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
-import { AuthService } from './core/services';
+import { User } from './auth/models';
+import { AuthActions } from './auth/redux/auth.actions';
+import { AuthSelectors } from './auth/redux/auth.selectors';
 
 @Component({
   selector: 'app-root',
@@ -11,12 +15,12 @@ import { AuthService } from './core/services';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  constructor(
-    private readonly router: Router,
-    public readonly authService: AuthService
-  ) {}
+  constructor(private readonly router: Router, private readonly store: Store) {}
 
   @ViewChild(MatDrawer) drawer: MatDrawer;
+  currentUser$: Observable<User>;
+  isLoggedIn$: Observable<boolean>;
+  isLoggedOut$: Observable<boolean>;
 
   ngOnInit() {
     this.router.events
@@ -26,6 +30,10 @@ export class AppComponent implements OnInit {
           this.drawer.close();
         }
       });
+
+    this.currentUser$ = this.store.select(AuthSelectors.currentUser);
+    this.isLoggedIn$ = this.store.select(AuthSelectors.isLoggedIn);
+    this.isLoggedOut$ = this.store.select(AuthSelectors.isLoggedOut);
   }
 
   toggleSidenav() {
@@ -33,6 +41,6 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
-    return this.authService.logout().subscribe();
+    this.store.dispatch(AuthActions.logoutRequested());
   }
 }

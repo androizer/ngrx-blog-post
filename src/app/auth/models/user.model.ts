@@ -31,11 +31,15 @@ export class User {
     this.fullName = data.fullName;
     this.password = data.password;
     this.role = data.role;
-    this.posts = data.posts ?? [];
-    this.postIds = data.postIds;
-    this.comments = data.comments ?? [];
-    this.commentIds = data.commentIds;
-    this.bookmarkIds = data.bookmarkIds;
+    this.posts = Array.isArray(data.posts)
+      ? data.posts.map((post) => post)
+      : [];
+    this.postIds = [...data.postIds];
+    this.comments = Array.isArray(data.comments)
+      ? data.comments.map((item) => item)
+      : [];
+    this.commentIds = [...data.commentIds];
+    this.bookmarkIds = [...data.bookmarkIds];
     this.createdBy = data.createdBy;
     this.modifiedBy = data.modifiedBy;
     this.createdOn = data.createdOn;

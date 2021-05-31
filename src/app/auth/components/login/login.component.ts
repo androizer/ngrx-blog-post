@@ -1,13 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { AuthService } from '../../../core/services';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
+
+import { AuthActions } from '../../redux/auth.actions';
 
 @Component({
   selector: 'app-login',
@@ -15,14 +10,10 @@ import { AuthService } from '../../../core/services';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly router: Router,
-    private readonly matSnackbar: MatSnackBar
-  ) {}
+  constructor(private readonly store: Store) {}
 
   hide = true;
-  formGroup!: FormGroup;
+  formGroup: FormGroup;
 
   ngOnInit() {
     this.formGroup = new FormGroup({
@@ -38,14 +29,7 @@ export class LoginComponent implements OnInit {
   onFormSubmit() {
     if (this.formGroup.valid) {
       const { email, password } = this.formGroup.value;
-      this.authService.login(email, password).subscribe(
-        () => {
-          this.router.navigate(['blogs']);
-        },
-        () => {
-          this.matSnackbar.open('Login Failed!', 'OK');
-        }
-      );
+      this.store.dispatch(AuthActions.loginRequested({ email, password }));
     }
   }
 }
