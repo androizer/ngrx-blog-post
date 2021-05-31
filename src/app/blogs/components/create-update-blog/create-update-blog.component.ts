@@ -9,36 +9,47 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ofType } from '@ngrx/effects';
 import { Update } from '@ngrx/entity';
-import { Store } from '@ngrx/store';
+import { ActionsSubject, Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { concatMap, delay, filter } from 'rxjs/operators';
+import { ComponentBase } from 'src/app/core/components/component-base';
 
 import { uuid } from '../../../core/types';
 import { BlogsAction } from '../../action.types';
 import { selectBlog } from '../../blogs.selector';
 import { Post } from '../../models';
-import { BlogService } from '../../services';
 
 @Component({
   selector: 'app-create-update-blog',
   templateUrl: './create-update-blog.component.html',
   styleUrls: ['./create-update-blog.component.scss'],
 })
-export class CreateUpdateBlogComponent implements OnInit {
+export class CreateUpdateBlogComponent extends ComponentBase implements OnInit {
   constructor(
     private readonly activatedRoute: ActivatedRoute,
-    private readonly blogService: BlogService,
     private readonly renderer2: Renderer2,
     private readonly router: Router,
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly actionSubject: ActionsSubject
   ) {
+    super();
     this.formGroup = new FormGroup({
       coverImage: new FormControl(null),
       title: new FormControl(null, [Validators.required]),
       content: new FormControl(null, [Validators.required]),
       tags: new FormControl([]),
     });
+    this._subscriptions.push(
+      this.actionSubject
+        .pipe(
+          ofType(BlogsAction.blogAddedSuccess, BlogsAction.blogUpdatedSuccess)
+        )
+        .subscribe(() => {
+          this.router.navigate(['/blogs']);
+        })
+    );
   }
 
   @ViewChild('bgImage') private readonly imageWrapper!: ElementRef;

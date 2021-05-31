@@ -1,18 +1,30 @@
-import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Store} from '@ngrx/store';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ofType } from '@ngrx/effects';
+import { ActionsSubject, Store } from '@ngrx/store';
+import { ComponentBase } from '../../../core/components/component-base';
 
-import {AuthActions} from '../../auth-action.types';
+import { AuthActions } from '../../auth-action.types';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent extends ComponentBase implements OnInit {
   constructor(
-    private readonly store: Store
-  ) {}
+    private readonly store: Store,
+    private readonly actionSub: ActionsSubject,
+    private readonly router: Router
+  ) {
+    super();
+    this._subscriptions.push(
+      this.actionSub.pipe(ofType(AuthActions.saveUser)).subscribe(() => {
+        this.router.navigate(['/blogs']);
+      })
+    );
+  }
 
   hide = true;
   formGroup!: FormGroup;

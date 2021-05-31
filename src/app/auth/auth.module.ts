@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
+import { CoreModule, FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -27,6 +27,7 @@ import * as fromAuth from './reducers';
     MatButtonModule,
     MatIconModule,
     ReactiveFormsModule,
+    CoreModule,
     StoreModule.forFeature(fromAuth.authFeatureKey, fromAuth.reducers, {
       metaReducers: fromAuth.metaReducers,
     }),

@@ -59,7 +59,6 @@ export class BlogsEffect {
             )
             .pipe(
               map((post) => {
-                this._navigateToBlogs();
                 return BlogsAction.blogUpdatedSuccess({
                   update: {
                     id: update.id as string,
@@ -90,7 +89,6 @@ export class BlogsEffect {
                 this.store.select(currentUserSelector).pipe(first()),
               ]).pipe(
                 map(([post, user]) => {
-                  this._navigateToBlogs();
                   post.author.avatar = user.avatar;
                   return BlogsAction.blogAddedSuccess({ post });
                 }),
@@ -137,7 +135,4 @@ export class BlogsEffect {
     private readonly store: Store
   ) {}
 
-  _navigateToBlogs() {
-    setTimeout(() => this.router.navigate(['/blogs']), 1000);
-  }
 }

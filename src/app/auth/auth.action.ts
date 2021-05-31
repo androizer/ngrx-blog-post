@@ -9,7 +9,7 @@ export const login = createAction(
 
 export const saveUser = createAction(
   '[Login/Refresh] Side Effect',
-  props<{ user: User, routeToBlogs: boolean }>()
+  props<{ user: User }>()
 );
 
 export const logout = createAction('[Sidenav] Logout Menu');

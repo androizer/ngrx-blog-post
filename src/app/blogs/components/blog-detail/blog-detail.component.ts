@@ -1,16 +1,21 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { iif, of } from 'rxjs';
-import { concatMap, filter, map, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { concatMap, filter, tap } from 'rxjs/operators';
 
 import { uuid } from '../../../core/types';
 import { BlogsAction, CommentActions } from '../../action.types';
 import { selectBlog } from '../../blogs.selector';
 import { filterCommentSelector } from '../../comments.selector';
 import { Post } from '../../models';
-import { BlogService, CommentService } from '../../services';
 
 @Component({
   selector: 'app-blog-detail',
@@ -20,8 +25,6 @@ import { BlogService, CommentService } from '../../services';
 export class BlogDetailComponent implements OnInit {
   constructor(
     private readonly activatedRoute: ActivatedRoute,
-    private readonly blogService: BlogService,
-    private readonly commentService: CommentService,
     private readonly renderer2: Renderer2,
     private readonly store: Store
   ) {
@@ -58,7 +61,7 @@ export class BlogDetailComponent implements OnInit {
           }
           return of(post);
         }),
-        filter(post => !!post),
+        filter((post) => !!post),
         tap((post) => {
           // creating copy and then assignment as we are mutating this.post object later
           this.post = Object.assign({}, post);
@@ -70,27 +73,22 @@ export class BlogDetailComponent implements OnInit {
             })
           );
         }),
-        concatMap(() =>
-          this.store.select(filterCommentSelector(commentIdList))
-        )
+        concatMap(() => this.store.select(filterCommentSelector(commentIdList)))
       )
       .subscribe((comments) => {
-          this.post.comments = comments;
-          this.commentControl.reset();
+        this.post.comments = comments;
+        this.commentControl.reset();
       });
   }
 
   addComment() {
     if (this.commentControl.valid) {
-      this.store.dispatch(CommentActions.addOneComment({content: this.commentControl.value, postId: this.postId}));
-      // this.commentService
-      //   .createComment(this.commentControl.value, this.postId, {
-      //     join: [{ field: 'author' }, { field: 'author.avatar' }],
-      //   })
-      //   .subscribe((payload) => {
-      //     this.post.comments?.unshift(payload);
-      //     this.commentControl.reset();
-      //   });
+      this.store.dispatch(
+        CommentActions.addOneComment({
+          content: this.commentControl.value,
+          postId: this.postId,
+        })
+      );
     }
   }
 

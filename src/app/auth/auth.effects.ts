@@ -19,7 +19,7 @@ export class AuthEffects {
         concatMap(({ email, password }) => {
           return this.authService.login(email, password).pipe(
             map((user) => {
-              return AuthActions.saveUser({ user, routeToBlogs: true });
+              return AuthActions.saveUser({user});
             }),
             catchError(async () => {
               this.matSnackbar.open('Login Failed!', 'OK');
@@ -29,22 +29,6 @@ export class AuthEffects {
         })
       );
     },
-  );
-
-  saveUser$ = createEffect(
-    () => {
-      return this.action$.pipe(
-        ofType(AuthActions.saveUser),
-        tap(({ user, routeToBlogs }) => {
-          if (routeToBlogs) {
-            setTimeout(() => {
-              this.router.navigate(['blogs']);
-            }, 1000);
-          }
-        })
-      );
-    },
-    { dispatch: false }
   );
 
   logout$ = createEffect(
@@ -64,6 +48,5 @@ export class AuthEffects {
     private readonly action$: Actions,
     private readonly authService: AuthService,
     private readonly matSnackbar: MatSnackBar,
-    private readonly router: Router
   ) {}
 }

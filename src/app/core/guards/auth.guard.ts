@@ -35,9 +35,7 @@ export class AuthGuard implements CanActivate, CanLoad {
         if (!payload) {
           return this.authService.refreshToken().pipe(
             map((user) => {
-              this.store.dispatch(
-                AuthActions.saveUser({ user, routeToBlogs: false })
-              );
+              this.store.dispatch(AuthActions.saveUser({ user }));
               return true;
             }),
             catchError(async () => {
